@@ -1845,6 +1845,98 @@ segment size:</string>
              </item>
             </layout>
            </widget>
+           <widget class="QWidget" name="pageMcp">
+            <layout class="QVBoxLayout" name="verticalLayout_mcp">
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="topMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <property name="bottomMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QGroupBox" name="grpMcp">
+               <property name="title">
+                <string>MCP server</string>
+               </property>
+               <layout class="QVBoxLayout" name="verticalLayout_mcp_box">
+                <item>
+                 <widget class="QCheckBox" name="chkMcpEnabled">
+                  <property name="text">
+                   <string>Enable MCP server for AI agents</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QHBoxLayout" name="horizontalLayout_mcp_port">
+                  <item>
+                   <widget class="QLabel" name="lblMcpPort">
+                    <property name="text">
+                     <string>Port:</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QSpinBox" name="spnMcpPort">
+                    <property name="minimum">
+                     <number>1024</number>
+                    </property>
+                    <property name="maximum">
+                     <number>65535</number>
+                    </property>
+                    <property name="value">
+                     <number>8765</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <spacer name="horizontalSpacer_mcp">
+                    <property name="orientation">
+                     <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="sizeHint" stdset="0">
+                     <size>
+                      <width>40</width>
+                      <height>20</height>
+                     </size>
+                    </property>
+                   </spacer>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="QLabel" name="lblMcpHint">
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Endpoint: http://127.0.0.1:&lt;i&gt;port&lt;/i&gt; (MCP over HTTP, 16 tools incl. camera)&lt;br/&gt;Takes effect after pressing OK. Restart is not required.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_mcp">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </widget>
           </widget>
          </item>
         </layout>

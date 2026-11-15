@@ -83,6 +83,9 @@ class frmSettings : public QDialog
     Q_PROPERTY(bool axisAX READ axisAX)
     Q_PROPERTY(QVariantMap device READ deviceSettingsVariantMap)
 
+    Q_PROPERTY(bool mcpEnabled READ mcpEnabled WRITE setMcpEnabled)
+    Q_PROPERTY(int mcpPort READ mcpPort WRITE setMcpPort)
+
 public:
     explicit frmSettings(QWidget *parent = 0);
     ~frmSettings();
@@ -208,6 +211,11 @@ public:
     QMap<int, float> &deviceSettings();
     void setDeviceSettings(QMap<int, float> &settings);
     QVariantMap deviceSettingsVariantMap();
+
+    bool mcpEnabled();
+    void setMcpEnabled(bool enabled);
+    int mcpPort();
+    void setMcpPort(int port);
 
     void setConnectionType(ConnectionType connectionType);
     ConnectionType connectionType() const;

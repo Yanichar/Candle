@@ -393,6 +393,26 @@ void frmSettings::setQueryStateTime(int queryStateTime)
     ui->txtQueryStateTime->setValue(queryStateTime);
 }
 
+bool frmSettings::mcpEnabled()
+{
+    return ui->chkMcpEnabled->isChecked();
+}
+
+void frmSettings::setMcpEnabled(bool enabled)
+{
+    ui->chkMcpEnabled->setChecked(enabled);
+}
+
+int frmSettings::mcpPort()
+{
+    return ui->spnMcpPort->value();
+}
+
+void frmSettings::setMcpPort(int port)
+{
+    ui->spnMcpPort->setValue(qBound(ui->spnMcpPort->minimum(), port, ui->spnMcpPort->maximum()));
+}
+
 bool frmSettings::resetOnConnection()
 {
     return ui->chkResetOnConnection->isChecked();
@@ -887,6 +907,9 @@ void frmSettings::setDefaultSettings()
 
     setQueryStateTime(40);
     setResetOnConnection(true);
+
+    setMcpEnabled(true);
+    setMcpPort(8765);
     setRapidSpeed(2000);
     setAcceleration(100);
     setSpindleSpeedMin(0);

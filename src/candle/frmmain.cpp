@@ -50,10 +50,21 @@ frmMain::frmMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::frmMain)
     initScriptWrapper();
     initScriptEngine();
 
+    m_mcpServer = new McpServer(this);
+    m_mcpServer->setDevice(m_scriptApp->device());
+    connect(this, &frmMain::deviceStateChanged, this, &frmMain::onDeviceStateChanged);
+    connect(this, &frmMain::senderStateChanged, this, &frmMain::onSenderStateChanged);
+
     // Load settings
     loadSettings();
     setSenderState(SenderStopped);
     updateControlsState();
+
+    m_mcpServer->setPort(m_settings->mcpPort());
+    if (m_settings->mcpEnabled()) {
+        m_mcpServer->start();
+    }
+    syncMcpState();
 
     // Handle cli file loading
     if (qApp->arguments().count() > 1 && isGCodeFile(qApp->arguments().last())) {
@@ -1104,6 +1115,7 @@ void frmMain::on_cmdSpindle_clicked(bool checked)
     } else {
         sendCommand(checked ? QString("M3 S%1").arg(ui->slbSpindle->value()) : "M5", -1, m_settings->showUICommands());
     }
+    syncMcpState();
 }
 
 void frmMain::on_cmdTop_clicked()
@@ -3064,6 +3076,7 @@ void frmMain::onOverridingToggled(bool checked)
 
 void frmMain::onOverrideChanged()
 {
+    syncMcpState();
     updateProgramEstimatedTime(*m_currentDrawer->viewParser()->getLineSegments());
 }
 
@@ -3153,6 +3166,7 @@ void frmMain::onSlbSpindleValueUserChanged()
 
 void frmMain::onSlbSpindleValueChanged()
 {
+    syncMcpState();
     if (!ui->grpSpindle->isChecked() && ui->cmdSpindle->isChecked())
         ui->grpSpindle->setTitle(tr("Spindle") + QString(tr(" (%1)")).arg(ui->slbSpindle->value()));
 }
@@ -3499,6 +3513,8 @@ void frmMain::storeSettings()
     set->setValue("fps", m_settings->fps());
     set->setValue("queryStateTime", m_settings->queryStateTime());
     set->setValue("resetOnConnection", m_settings->resetOnConnection());
+    set->setValue("mcpEnabled", m_settings->mcpEnabled());
+    set->setValue("mcpPort", m_settings->mcpPort());
     set->setValue("axisAEnabled", m_settings->axisAEnabled());
     set->setValue("axisAX", m_settings->axisAX());
 
@@ -3689,6 +3705,8 @@ void frmMain::restoreSettings()
         m_settings->setAcceleration(set->value("acceleration", 10).toInt());
         m_settings->setFps(set->value("fps", 60).toInt());
         m_settings->setQueryStateTime(set->value("queryStateTime", 40).toInt());
+        m_settings->setMcpEnabled(set->value("mcpEnabled", true).toBool());
+        m_settings->setMcpPort(set->value("mcpPort", 8765).toInt());
         m_settings->setResetOnConnection(set->value("resetOnConnection", true).toBool());
         m_settings->setUseStartCommands(set->value("useStartCommands").toBool());
         m_settings->setStartCommands(set->value("startCommands").toString());
@@ -4227,6 +4245,14 @@ void frmMain::applySettings()
     }
 
     m_timerStateQuery.setInterval(m_settings->queryStateTime());
+
+    if (m_mcpServer) {
+        m_mcpServer->stop();
+        m_mcpServer->setPort(m_settings->mcpPort());
+        if (m_settings->mcpEnabled()) {
+            m_mcpServer->start();
+        }
+    }
 
     updateControlsState();
 }
@@ -5948,6 +5974,30 @@ void frmMain::setDeviceState(DeviceState state)
         m_deviceState = state;
         emit deviceStateChanged(state);
     }
+}
+
+void frmMain::onDeviceStateChanged(int state)
+{
+    if (m_mcpServer) {
+        m_mcpServer->setState(state, m_senderState);
+    }
+}
+
+void frmMain::onSenderStateChanged(int state)
+{
+    if (m_mcpServer) {
+        m_mcpServer->setState(m_deviceState, state);
+    }
+}
+
+void frmMain::syncMcpState()
+{
+    if (!m_mcpServer) return;
+
+    m_mcpServer->setFeedOverride(ui->slbFeedOverride->value(),
+                                ui->slbRapidOverride->value());
+    m_mcpServer->setSpindleState(ui->slbSpindle->value(), m_spindleCW,
+                                ui->cmdSpindle->isChecked());
 }
 
 void frmMain::completeTransfer()

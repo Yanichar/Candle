@@ -8,6 +8,7 @@
 #include <QSettings>
 #include <QTimer>
 #include <QBasicTimer>
+#include "mcpserver.h"
 #include <QStringList>
 #include <QList>
 #include <QTime>
@@ -252,6 +253,9 @@ private slots:
     void onConnectionDisconnected();
     void onTimerConnection();
     void onTimerStateQuery();
+
+    void onDeviceStateChanged(int state);
+    void onSenderStateChanged(int state);
     void onTableInsertLine();
     void onTableDeleteLines();
     void onTableCutLines();
@@ -449,6 +453,8 @@ private:
     QScriptEngine m_scriptEngine;
     ScriptApp* m_scriptApp;
 
+    McpServer *m_mcpServer;
+
     // TODO: remove
     ScriptVars m_storedVars;
 
@@ -483,6 +489,8 @@ private:
 
     // Plugins
     void loadPlugins();
+
+    void syncMcpState();
 
     // Communication
     void grblReset();
